@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>Perfect Slow Heart Draw</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: black;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="heartCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById('heartCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // تحديد حجم الكانفاس بملئ الشاشة
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const words = "I love you";
+        const scale = 14; // حجم القلب (نفس الصورة)
+        const fps = 60; // عدد الإطارات في الثانية لحركة ناعمة
+        const drawSpeed = 0.01; // كلما قللت هذا الرقم، زاد بطء الحركة (0.01 هي سرعة متوسطة-بطيئة جداً وجميلة)
+        let t = 0; // الوقت أو الزاوية
+
+        // معادلة القلب الرياضية الدقيقة
+        function getHeartPoint(angle) {
+            const x = 16 * Math.pow(Math.sin(angle), 3);
+            const y = -(13 * Math.cos(angle) - 5 * Math.cos(2 * angle) - 2 * Math.cos(3 * angle) - Math.cos(4 * angle));
+            return { x: x * scale, y: y * scale };
+        }
+
+        // إعدادات النص (bold وواضح)
+        ctx.font = "bold 15px Arial";
+        ctx.fillStyle = "#ff0000"; // لون أحمر نقي
+
+        function animate() {
+            // تأثير "المسح التدريجي" الهادئ
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.005)'; // رقم صغير جداً يعني مسح ناعم وبطيء
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // حساب النقطة الحالية على مسار القلب
+            const pos = getHeartPoint(t);
+            const posX = pos.x + canvas.width / 2;
+            const posY = pos.y + canvas.height / 2;
+
+            // رسم النص بلون أحمر كامل
+            ctx.fillStyle = "#ff0000";
+            ctx.fillText(words, posX, posY);
+
+            // زيادة t ببطء شديد
+            t += drawSpeed;
+
+            // إذا اكتمل القلب، أعد الرسم من جديد
+            if (t > Math.PI * 2) {
+                t = 0;
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        // بدء الأنيميشن
+        animate();
+
+        // إعادة ضبط الحجم عند تغيير حجم النافذة
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            // يجب إعادة تعيين خصائص الخط لأن تغيير الحجم يمسحها
+            ctx.font = "bold 15px Arial";
+        });
+    </script>
+</body>
+</html>
