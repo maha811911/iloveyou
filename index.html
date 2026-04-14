@@ -1,8 +1,7 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Perfect Slow Heart Draw</title>
+    <title>Perfect Heart</title>
     <style>
         body {
             margin: 0;
@@ -16,67 +15,55 @@
     </style>
 </head>
 <body>
-    <canvas id="heartCanvas"></canvas>
+    <canvas id="heart"></canvas>
     <script>
-        const canvas = document.getElementById('heartCanvas');
+        const canvas = document.getElementById('heart');
         const ctx = canvas.getContext('2d');
 
-        // تحديد حجم الكانفاس بملئ الشاشة
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
         const words = "I love you";
-        const scale = 14; // حجم القلب (نفس الصورة)
-        const fps = 60; // عدد الإطارات في الثانية لحركة ناعمة
-        const drawSpeed = 0.01; // كلما قللت هذا الرقم، زاد بطء الحركة (0.01 هي سرعة متوسطة-بطيئة جداً وجميلة)
-        let t = 0; // الوقت أو الزاوية
+        const scale = 13; // حجم القلب
+        let t = 0;
 
-        // معادلة القلب الرياضية الدقيقة
-        function getHeartPoint(angle) {
-            const x = 16 * Math.pow(Math.sin(angle), 3);
-            const y = -(13 * Math.cos(angle) - 5 * Math.cos(2 * angle) - 2 * Math.cos(3 * angle) - Math.cos(4 * angle));
-            return { x: x * scale, y: y * scale };
-        }
-
-        // إعدادات النص (bold وواضح)
-        ctx.font = "bold 15px Arial";
-        ctx.fillStyle = "#ff0000"; // لون أحمر نقي
-
-        function animate() {
-            // تأثير "المسح التدريجي" الهادئ
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.005)'; // رقم صغير جداً يعني مسح ناعم وبطيء
+        function draw() {
+            // مسح تدريجي خفيف جداً عشان يسوي تأثير "الخيوط" اللي بالصورة
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.03)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // حساب النقطة الحالية على مسار القلب
-            const pos = getHeartPoint(t);
-            const posX = pos.x + canvas.width / 2;
-            const posY = pos.y + canvas.height / 2;
-
-            // رسم النص بلون أحمر كامل
+            // إعداد الخط: خليته Bold وصغير عشان الكلمة تبان كاملة ومرتبة
+            ctx.font = "bold 14px monospace"; 
             ctx.fillStyle = "#ff0000";
-            ctx.fillText(words, posX, posY);
 
-            // زيادة t ببطء شديد
-            t += drawSpeed;
+            // رسم 5 كلمات في كل مرة عشان السرعة تكون ممتازة
+            for(let i = 0; i < 5; i++) {
+                const x = 16 * Math.pow(Math.sin(t), 3);
+                const y = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+                
+                const posX = x * scale + canvas.width / 2;
+                const posY = y * scale + canvas.height / 2;
 
-            // إذا اكتمل القلب، أعد الرسم من جديد
-            if (t > Math.PI * 2) {
-                t = 0;
+                // رسم الكلمة
+                ctx.save();
+                ctx.translate(posX, posY);
+                // تدوير الكلمة عشان تمشي مع انحناء القلب (زي الصورة بالضبط)
+                ctx.rotate(t + Math.PI / 2); 
+                ctx.fillText(words, 0, 0);
+                ctx.restore();
+
+                t += 0.015; // هذي السرعة.. موزونة عشان تطلع مرتبة
             }
 
-            requestAnimationFrame(animate);
+            requestAnimationFrame(draw);
         }
 
-        // بدء الأنيميشن
-        animate();
+        draw();
 
-        // إعادة ضبط الحجم عند تغيير حجم النافذة
-        window.addEventListener('resize', () => {
+        window.onresize = () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            // يجب إعادة تعيين خصائص الخط لأن تغيير الحجم يمسحها
-            ctx.font = "bold 15px Arial";
-        });
+        };
     </script>
 </body>
 </html>
